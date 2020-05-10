@@ -6,24 +6,24 @@ import java.util.Date;
 import java.util.Scanner;
 
 import model.entities.Reservation;
+import model.exceptions.DomainException;
 
 public class Program {
 	
 	public static void main(String[] args) throws ParseException {
 		
-		Scanner sc = new Scanner(System.in);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		
-		System.out.print("Room number: ");
-		int number = sc.nextInt();
-		sc.nextLine();
-		System.out.print("Check-in Date (dd/MM/yyyy): ");
-		Date checkin = sdf.parse(sc.nextLine());
-		System.out.print("Check-out Date (dd/MM/yyyy): ");
-		Date checkout = sdf.parse(sc.nextLine());
-		if(!checkout.after(checkin)) {
-			System.out.println("Error in reservation: Check-out date must be after check-in date");			
-		}else {
+		try {
+			Scanner sc = new Scanner(System.in);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			
+			System.out.print("Room number: ");
+			int number = sc.nextInt();
+			sc.nextLine();
+			System.out.print("Check-in Date (dd/MM/yyyy): ");
+			Date checkin = sdf.parse(sc.nextLine());
+			System.out.print("Check-out Date (dd/MM/yyyy): ");
+			Date checkout = sdf.parse(sc.nextLine());
+	
 			Reservation reservation = new Reservation(number, checkin, checkout);
 			System.out.println("reservation: " + reservation);
 			
@@ -34,12 +34,15 @@ public class Program {
 			System.out.print("Check-out Date (dd/MM/yyyy): ");
 			checkout = sdf.parse(sc.nextLine());
 			
-			String error = reservation.updateDates(checkin, checkout);
-			if(error != null) {
-				System.out.println("Error in reservation: " + error);
-			} else {
-				System.out.print("reservation: " + reservation);	
-			}
+			reservation.updateDates(checkin, checkout);
+			System.out.print("reservation: " + reservation);
+			sc.close();
+		}catch(ParseException e) {
+			System.out.println("Invalid date format");
+		}catch(DomainException e) {
+			System.out.println("Error in reservation: " + e.getMessage());
+		}catch(RuntimeException e) {
+			System.out.println("Unexpected error");
 		}
 	}
 }
